@@ -53,7 +53,11 @@ module Pod
       # @return [Specification] the top level specification for this set for any version.
       #
       def specification_name
-        Specification.from_file(specification_paths_for_version(any_version).first).name
+        versions_by_source.each do |source, versions|
+          next unless version = versions.first
+          return source.specification(name, version).name
+        end
+        nil
       end
 
       # @return [Array<String>] the paths to specifications for the given
@@ -132,12 +136,6 @@ module Pod
       end
 
       private
-
-      # @return [Version] A version known for this specification.
-      #
-      def any_version
-        versions_by_source.values.flatten.uniq.first
-      end
 
       #-----------------------------------------------------------------------#
 
